@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Microsoft.Unity.VisualStudio.Editor;
 using NUnit.Framework;
 using UnityEngine;
@@ -15,10 +16,12 @@ public class Player : MonoBehaviour
     [Header("O2")]
     [field:SerializeField] public float O2Dwoun {get;set;}
     [field:SerializeField] public float O2Up {get;set;}
-    private float O2;
-    private float MaxO2 = 100f;
+    public float O2;
+    public float MaxO2 = 100f;
     public Light2D globallight;
     public Light2D spotLight;
+    private bool isItem;
+    public UnityEngine.UI.Image itemGage;
     
     void Start()
     {
@@ -66,6 +69,11 @@ public class Player : MonoBehaviour
         if(!isBreathing)
         {
             globallight.intensity = 0.1f + (transform.position.y / 200);
+        }
+        if(isItem)
+        {
+
+            //itemGage.fillAmount = 
         }
     }
     void FixedUpdate()
@@ -131,6 +139,23 @@ public class Player : MonoBehaviour
                 SceneController.instance.EndGame();
             }
         }
+        if(collision.CompareTag("PlayerItem"))
+        {
+            PlayerItem playerItem = collision.GetComponent<PlayerItem>();
+            switch(playerItem.itemType)
+            {
+                case type.Speed:
+                    StartCoroutine(SpeedUp(5f));
+                    break;
+                case type.Light:
+                    StartCoroutine(ExpandLight(5f));
+                    break;
+                case type.Oxygen:
+                    RechargeOx(playerItem);
+                    break;
+            }
+            Destroy(collision.gameObject);
+        }
     }
     void OnTriggerExit2D(Collider2D collision)
     {
@@ -154,6 +179,35 @@ public class Player : MonoBehaviour
             count--;
             CameraImpulse.instance.Shake();
             yield return new WaitForSeconds(0.1f);
+        }
+    }
+    IEnumerator SpeedUp(float duration)
+    {
+        isItem = true;
+        float original = Speed;
+        Speed *= 2;
+        yield return new WaitForSeconds(duration);
+        Speed = original;
+        isItem = false;
+    }
+    IEnumerator ExpandLight(float duration)
+    {
+        isItem = true;
+        float original = spotLight.pointLightOuterRadius;
+        spotLight.pointLightOuterRadius *= 2; 
+        yield return new WaitForSeconds(duration);
+        spotLight.pointLightOuterRadius = original;
+        isItem = false;
+    }
+    public void RechargeOx(PlayerItem item)
+    {
+        if(O2 + item.plusOx >= MaxO2)
+        {
+            O2 = MaxO2;
+        }
+        else
+        {
+            O2 += item.plusOx;
         }
     }
 }
