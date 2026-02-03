@@ -62,6 +62,11 @@ public class Player : MonoBehaviour
         }
         GameManager.instance.endTime += Time.deltaTime;
         UIManager.instance.SetPercent(O2);
+        UIManager.instance.SetDepth(transform);
+        if(!isBreathing)
+        {
+            globallight.intensity = 0.1f + (transform.position.y / 200);
+        }
     }
     void FixedUpdate()
     {
@@ -131,7 +136,7 @@ public class Player : MonoBehaviour
     {
         if(collision.CompareTag("SaftyZone"))
         {
-            globallight.intensity = 0f;
+            globallight.intensity = 0.1f;
             spotLight.enabled = true;
             isBreathing = false;
             

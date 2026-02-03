@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.Unity.VisualStudio.Editor;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -8,6 +9,8 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
     public UnityEngine.UI.Image[] items;
     public Dictionary<int, GameObject> itemss = new Dictionary<int, GameObject>();
+    public Player player;
+    public RectTransform depthImage;
     void Awake()
     {
         if(instance == null)
@@ -47,5 +50,11 @@ public class UIManager : MonoBehaviour
                 GameManager.instance.Change(i);
             }
         }
+
+    }
+    public void SetDepth(Transform depth)
+    {
+        Vector2 pos = new Vector2(48f + 1.58f*depth.position.y, 0);
+        depthImage.anchoredPosition = pos;
     }
 }
