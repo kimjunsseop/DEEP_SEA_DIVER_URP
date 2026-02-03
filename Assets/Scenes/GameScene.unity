@@ -27644,6 +27644,7 @@ MonoBehaviour:
   MaxO2: 100
   globallight: {fileID: 2053169645}
   spotLight: {fileID: 2027710063}
+  itemGage: {fileID: 0}
 --- !u!61 &1051503856
 BoxCollider2D:
   m_ObjectHideFlags: 0
