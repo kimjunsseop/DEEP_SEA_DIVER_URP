@@ -6,7 +6,7 @@ public class OutlineRenderPassHLSL : ScriptableRenderPass
 {
     private FilteringSettings filteringSettings;
     private Material outlineMaterial;
-    private readonly ShaderTagId shaderTagId = new ShaderTagId("UniversalForward");
+    private readonly ShaderTagId shaderTagId = new ShaderTagId("Universal2D");
 
     public OutlineRenderPassHLSL(Material material)
     {

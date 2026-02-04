@@ -7,83 +7,51 @@ public class Monster : MonoBehaviour
     public float attackPower;
     public int flag;
     public float moveSpeed = 2f;
-    Animator anim;
+    Vector3 original;
+    SpriteRenderer render;
 
     void Start()
     {
-        if(transform.position.x < 0)
+        render = GetComponent<SpriteRenderer>();
+        original = transform.position;
+        int rand = UnityEngine.Random.Range(0,2);
+        if(rand == 0)
         {
-            isRight = false;
-            flag = 1;
+            flag =1;
         }
         else
         {
-            isRight = true;
             flag = -1;
         }
-        anim = GetComponent<Animator>();
     }
     void Update()
     {
-        if(isRight == false)
-        {
-            if(transform.position.x > -2.5)
-            {
-                flag = -1;
-                transform.Translate(new Vector3(flag, 0, 0) * moveSpeed * Time.deltaTime);
-            }
-            else if(transform.position.x < -8.5)
-            {
-                flag = 1;
-                transform.Translate(new Vector3(flag, 0, 0) * moveSpeed * Time.deltaTime);
-            }
-            else
-            {
-                transform.Translate(new Vector3(flag, 0, 0) * moveSpeed * Time.deltaTime);
-            }
-        }
-        else
-        {
-            if(transform.position.x > 8.5)
-            {
-                flag = -1;
-                transform.Translate(new Vector3(flag, 0, 0) * moveSpeed * Time.deltaTime);
-            }
-            else if(transform.position.x < 2.5)
-            {
-                flag = 1;
-                transform.Translate(new Vector3(flag, 0, 0) * moveSpeed * Time.deltaTime);
-            }
-            else
-            {
-                transform.Translate(new Vector3(flag, 0, 0) * moveSpeed * Time.deltaTime);
-            }
-        }
-    }
-    void SetAnim(int flag)
-    {
         if(flag == 1)
         {
-            anim.SetBool("flag", true);
+            if(transform.position.x <= original.x + 2)
+            {
+                transform.Translate(new Vector3(1,0,0) * moveSpeed * Time.deltaTime);   
+            }
+            else
+            {
+                flag = -1;
+                render.flipX = false;
+            }
         }
         else
         {
-            anim.SetBool("flag", false);
+            if(transform.position.x >= original.x -2)
+            {
+                transform.Translate(new Vector3(-1,0,0) * moveSpeed * Time.deltaTime);
+            }
+            else
+            {
+                flag = 1;
+                render.flipX = true;
+            }
         }
     }
 
-    public void SetRight(bool input)
-    {
-        isRight = input;
-        if(input == false)
-        {
-            flag = 1;
-        }
-        else
-        {
-            flag = -1;
-        }
-    }
 
     void OnTriggerEnter2D(Collider2D collision)
     {

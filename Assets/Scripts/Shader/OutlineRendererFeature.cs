@@ -4,24 +4,22 @@ using UnityEngine.Rendering.Universal;
 // RenderPass 생성 및 Renderer에 등록
 public class OutlineRendererFeature : ScriptableRendererFeature
 {
-    // shader graph 방식에선,
-    // pass에 선언되어있는 material을 여기 feature에서 inspector 에서 받아줘야함. Pass 아님!
-    [SerializeField] public Material outlineMaterial;
-    // Render Pass 담을 변수
+    [SerializeField] private Material outlineMaterial;
+
     OutlineRenderPass outlinePass;
 
-    // Pass 생성
     public override void Create()
     {
-        // 인스펙터에서 받아온 material pass에 적용시켜주기. (shader graph 방식) 생성자로 전달.
         outlinePass = new OutlineRenderPass(outlineMaterial);
     }
 
-    // Renderer에 등록. 의미 : 이제 이 Renderer는 Outline Pass 를 포함한다.
-
-    public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
+    public override void AddRenderPasses(
+        ScriptableRenderer renderer,
+        ref RenderingData renderingData)
     {
+        if (outlineMaterial == null)
+            return;
+
         renderer.EnqueuePass(outlinePass);
     }
-
 }
