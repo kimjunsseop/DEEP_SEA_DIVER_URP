@@ -13,7 +13,6 @@ public class UIManager : MonoBehaviour
     public Dictionary<int, GameObject> itemss = new Dictionary<int, GameObject>();
     public Player player;
     public RectTransform depthImage;
-    public GameObject itemGage;
     void Awake()
     {
         if(instance == null)

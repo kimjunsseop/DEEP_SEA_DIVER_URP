@@ -22,11 +22,17 @@ public class Player : MonoBehaviour
     public Light2D spotLight;
     private bool isItem;
     public UnityEngine.UI.Image itemGage;
+    public float maxItemDuration = 5f;
+    float currentDuration;
+    private BoxCollider2D col;
     
     void Start()
     {
         anim = GetComponent<Animator>();
+        col = GetComponent<BoxCollider2D>();
         O2 = MaxO2;
+        itemGage.enabled = false;
+        currentDuration = maxItemDuration;
         //UIManager.instance.Initialized();
     }
     void Update()
@@ -72,9 +78,10 @@ public class Player : MonoBehaviour
         }
         if(isItem)
         {
-
-            //itemGage.fillAmount = 
+            currentDuration -= Time.deltaTime;
+            itemGage.fillAmount = currentDuration / maxItemDuration;
         }
+
     }
     void FixedUpdate()
     {
@@ -86,32 +93,38 @@ public class Player : MonoBehaviour
     }
     void SetAnim(float h, float v)
     {
-        if(h > 0 && !isBreathing)
-        {
-            anim.SetBool("Right", true);
-        }
-        else if(h < 0 && !isBreathing)
-        {
-            anim.SetBool("Left", true);
-        }
-        else
-        {
-            anim.SetBool("Right", false);
-            anim.SetBool("Left", false);
-        }
-
         if(v > 0 && !isBreathing)
         {
             anim.SetBool("Up", true);
+            colRig();
         }
         else if(v < 0)
         {
             anim.SetBool("Down", true);
+            colRig();
         }
         else
         {
             anim.SetBool("Up", false);
             anim.SetBool("Down", false);
+            rawRig();
+        }
+
+        if(h > 0 && !isBreathing)
+        {
+            anim.SetBool("Right", true);
+            rawRig();
+        }
+        else if(h < 0 && !isBreathing)
+        {
+            anim.SetBool("Left", true);
+            rawRig();
+        }
+        else
+        {
+            anim.SetBool("Right", false);
+            anim.SetBool("Left", false);
+            colRig();
         }
     }
     void OnTriggerEnter2D(Collider2D collision)
@@ -145,10 +158,10 @@ public class Player : MonoBehaviour
             switch(playerItem.itemType)
             {
                 case type.Speed:
-                    StartCoroutine(SpeedUp(5f));
+                    StartCoroutine(SpeedUp(maxItemDuration));
                     break;
                 case type.Light:
-                    StartCoroutine(ExpandLight(5f));
+                    StartCoroutine(ExpandLight(maxItemDuration));
                     break;
                 case type.Oxygen:
                     RechargeOx(playerItem);
@@ -184,19 +197,25 @@ public class Player : MonoBehaviour
     IEnumerator SpeedUp(float duration)
     {
         isItem = true;
+        itemGage.enabled = true;
         float original = Speed;
         Speed *= 2;
         yield return new WaitForSeconds(duration);
         Speed = original;
+        itemGage.enabled = false;
+        currentDuration = maxItemDuration;
         isItem = false;
     }
     IEnumerator ExpandLight(float duration)
     {
         isItem = true;
+        itemGage.enabled = true;
         float original = spotLight.pointLightOuterRadius;
         spotLight.pointLightOuterRadius *= 2; 
         yield return new WaitForSeconds(duration);
         spotLight.pointLightOuterRadius = original;
+        itemGage.enabled = false;
+        currentDuration = maxItemDuration;
         isItem = false;
     }
     public void RechargeOx(PlayerItem item)
@@ -209,5 +228,16 @@ public class Player : MonoBehaviour
         {
             O2 += item.plusOx;
         }
+    }
+
+    public void rawRig()
+    {
+        col.offset = new Vector2(0.01130903f, -0.0947918f);
+        col.size = new Vector2(1.799296f, 0.6757025f);
+    }
+    public void colRig()
+    {
+        col.offset = new Vector2(0, 0.05065355f);
+        col.size = new Vector2(0.5890918f, 1.430633f);
     }
 }
