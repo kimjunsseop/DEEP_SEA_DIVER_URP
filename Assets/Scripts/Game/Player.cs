@@ -96,35 +96,53 @@ public class Player : MonoBehaviour
         if(v > 0 && !isBreathing)
         {
             anim.SetBool("Up", true);
-            colRig();
+            if(!anim.GetBool("Right") && !anim.GetBool("Left"))
+            {
+                colRig();   
+            }
         }
         else if(v < 0)
         {
             anim.SetBool("Down", true);
-            colRig();
+            if(!anim.GetBool("Right") && !anim.GetBool("Left"))
+            {
+                colRig();   
+            }
         }
         else
         {
             anim.SetBool("Up", false);
             anim.SetBool("Down", false);
-            rawRig();
+            if(!anim.GetBool("Down") && !anim.GetBool("Up"))
+            {
+                rawRig();
+            }
         }
 
         if(h > 0 && !isBreathing)
         {
             anim.SetBool("Right", true);
-            rawRig();
+            if(!anim.GetBool("Down") && !anim.GetBool("Up"))
+            {
+                rawRig();   
+            }
         }
         else if(h < 0 && !isBreathing)
         {
             anim.SetBool("Left", true);
-            rawRig();
+            if(!anim.GetBool("Down") && !anim.GetBool("Up"))
+            {
+                rawRig();   
+            }
         }
         else
         {
             anim.SetBool("Right", false);
             anim.SetBool("Left", false);
-            colRig();
+            if(!anim.GetBool("Right") || !anim.GetBool("Left"))
+            {
+                colRig();
+            }
         }
     }
     void OnTriggerEnter2D(Collider2D collision)
