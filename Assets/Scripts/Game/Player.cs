@@ -81,7 +81,11 @@ public class Player : MonoBehaviour
             currentDuration -= Time.deltaTime;
             itemGage.fillAmount = currentDuration / maxItemDuration;
         }
-
+        if(O2 <= 0)
+        {
+            SceneController.instance.EndGame();
+            GameManager.instance.result = false;
+        }
     }
     void FixedUpdate()
     {
@@ -168,6 +172,7 @@ public class Player : MonoBehaviour
             if(GameManager.instance.Check())
             {
                 SceneController.instance.EndGame();
+                GameManager.instance.result = true;
             }
         }
         if(collision.CompareTag("PlayerItem"))

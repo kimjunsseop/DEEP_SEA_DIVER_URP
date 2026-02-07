@@ -10,7 +10,7 @@ public class Monster : MonoBehaviour
     Vector3 original;
     SpriteRenderer render;
 
-    void Start()
+    void OnEnable()
     {
         render = GetComponent<SpriteRenderer>();
         original = transform.position;
@@ -23,6 +23,8 @@ public class Monster : MonoBehaviour
         {
             flag = -1;
         }
+        float r = UnityEngine.Random.Range(0, 4f);
+        moveSpeed = r;
     }
     void Update()
     {
@@ -58,6 +60,7 @@ public class Monster : MonoBehaviour
         if(collision.CompareTag("Player"))
         {
             Destroy(gameObject);
+            MonsterSpawner.instance.ReSpawn();
         }
     }
 }

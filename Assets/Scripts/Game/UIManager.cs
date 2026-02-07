@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Unity.VisualStudio.Editor;
+using NUnit.Framework.Internal;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +15,7 @@ public class UIManager : MonoBehaviour
     public Dictionary<int, GameObject> itemss = new Dictionary<int, GameObject>();
     public Player player;
     public RectTransform depthImage;
+
     void Awake()
     {
         if(instance == null)
