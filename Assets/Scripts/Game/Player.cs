@@ -3,9 +3,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Microsoft.Unity.VisualStudio.Editor;
 using NUnit.Framework;
+using UnityEditor;
+using UnityEditor.Rendering.Universal;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
+
+enum PlayerState
+{
+    UP = -90,
+    Down = 90,
+    Left = 0,
+    Right = 180
+}
 
 public class Player : MonoBehaviour
 {
@@ -25,6 +36,9 @@ public class Player : MonoBehaviour
     public float maxItemDuration = 5f;
     float currentDuration;
     private BoxCollider2D col;
+    public ParticleSystem bubble;
+    private PlayerState ps;
+    public PostProcessVolume PV;
     
     void Start()
     {
@@ -33,6 +47,7 @@ public class Player : MonoBehaviour
         O2 = MaxO2;
         itemGage.enabled = false;
         currentDuration = maxItemDuration;
+        bubble.gameObject.SetActive(false);
         //UIManager.instance.Initialized();
     }
     void Update()
@@ -102,7 +117,12 @@ public class Player : MonoBehaviour
             anim.SetBool("Up", true);
             if(!anim.GetBool("Right") && !anim.GetBool("Left"))
             {
-                colRig();   
+                colRig();
+                ps = PlayerState.UP;  
+                if(bubble.gameObject.activeSelf)
+                {
+                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
+                } 
             }
         }
         else if(v < 0)
@@ -110,7 +130,12 @@ public class Player : MonoBehaviour
             anim.SetBool("Down", true);
             if(!anim.GetBool("Right") && !anim.GetBool("Left"))
             {
-                colRig();   
+                colRig();
+                ps = PlayerState.Down; 
+                if(bubble.gameObject.activeSelf)
+                {
+                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
+                }   
             }
         }
         else
@@ -120,6 +145,11 @@ public class Player : MonoBehaviour
             if(!anim.GetBool("Down") && !anim.GetBool("Up"))
             {
                 rawRig();
+                ps = PlayerState.UP;
+                if(bubble.gameObject.activeSelf)
+                {
+                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
+                } 
             }
         }
 
@@ -129,6 +159,11 @@ public class Player : MonoBehaviour
             if(!anim.GetBool("Down") && !anim.GetBool("Up"))
             {
                 rawRig();   
+                ps = PlayerState.Right;
+                if(bubble.gameObject.activeSelf)
+                {
+                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
+                } 
             }
         }
         else if(h < 0 && !isBreathing)
@@ -137,6 +172,11 @@ public class Player : MonoBehaviour
             if(!anim.GetBool("Down") && !anim.GetBool("Up"))
             {
                 rawRig();   
+                ps = PlayerState.Left;
+                if(bubble.gameObject.activeSelf)
+                {
+                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
+                } 
             }
         }
         else
@@ -146,6 +186,11 @@ public class Player : MonoBehaviour
             if(!anim.GetBool("Right") || !anim.GetBool("Left"))
             {
                 colRig();
+                ps = PlayerState.UP;
+                if(bubble.gameObject.activeSelf)
+                {
+                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
+                } 
             }
         }
     }
@@ -219,6 +264,7 @@ public class Player : MonoBehaviour
     }
     IEnumerator SpeedUp(float duration)
     {
+        bubble.gameObject.SetActive(true);
         isItem = true;
         itemGage.enabled = true;
         float original = Speed;
@@ -226,6 +272,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(duration);
         Speed = original;
         itemGage.enabled = false;
+        bubble.gameObject.SetActive(false);
         currentDuration = maxItemDuration;
         isItem = false;
     }
