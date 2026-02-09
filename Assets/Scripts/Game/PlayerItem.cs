@@ -6,7 +6,8 @@ public enum type
 {
     Speed,
     Light,
-    Oxygen
+    Oxygen,
+    Compass
 }
 public class PlayerItem : MonoBehaviour
 {

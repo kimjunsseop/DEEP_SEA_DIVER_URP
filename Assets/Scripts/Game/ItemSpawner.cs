@@ -13,6 +13,7 @@ public class ItemSpawner : MonoBehaviour
     public Player player;
     public GameObject[] items;
     public GameObject[] playerItems;
+    public List<Transform> location;
     public int playerItemSize = 5;
     public int itemSize = 3;
     void Awake()
@@ -24,6 +25,7 @@ public class ItemSpawner : MonoBehaviour
     }
     void Start()
     {
+        location = new List<Transform>();
         List<int> rand = new List<int>();
         List<int> prand = new List<int>();
         for(int i = 0; i < spawnPoints.Length; i++)
@@ -63,6 +65,7 @@ public class ItemSpawner : MonoBehaviour
         for(int i = 0; i < itemSize; i++)
         {
             Instantiate(items[r[i]], spawnPoints[rand[i]].position, Quaternion.identity);
+            location.Add(spawnPoints[rand[i]]);
             UIManager.instance.setImage(items[r[i]], i);
             UIManager.instance.itemss.Add(r[i], items[r[i]]);
             GameManager.instance.found.Add(false);

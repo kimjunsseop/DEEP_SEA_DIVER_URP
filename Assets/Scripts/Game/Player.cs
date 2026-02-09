@@ -10,11 +10,12 @@ using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 enum PlayerState
 {
-    UP = -90,
-    Down = 90,
+    UP = 270,
+    Down = 92,
     Left = 0,
     Right = 180
 }
@@ -41,6 +42,7 @@ public class Player : MonoBehaviour
     private PlayerState ps;
     public Volume volume;
     private UnityEngine.Rendering.Universal.Bloom bloom;
+    public UnityEngine.UI.Image arrow;
     
     void Start()
     {
@@ -51,6 +53,7 @@ public class Player : MonoBehaviour
         currentDuration = maxItemDuration;
         bubble.gameObject.SetActive(false);
         volume.profile.TryGet(out bloom);
+        arrow.gameObject.SetActive(false);
         //UIManager.instance.Initialized();
     }
     void Update()
@@ -134,6 +137,7 @@ public class Player : MonoBehaviour
             if(!anim.GetBool("Right") && !anim.GetBool("Left"))
             {
                 colRig();
+                
                 ps = PlayerState.Down; 
                 if(bubble.gameObject.activeSelf)
                 {
@@ -189,7 +193,14 @@ public class Player : MonoBehaviour
             if(!anim.GetBool("Right") || !anim.GetBool("Left"))
             {
                 colRig();
-                ps = PlayerState.UP;
+                if(v > 0)
+                {
+                    ps = PlayerState.UP;    
+                }
+                else
+                {
+                    ps = PlayerState.Down;
+                }
                 if(bubble.gameObject.activeSelf)
                 {
                     bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
@@ -235,7 +246,14 @@ public class Player : MonoBehaviour
                     if(!isItem) StartCoroutine(ExpandLight(maxItemDuration));
                     break;
                 case type.Oxygen:
-                    if(!isItem) RechargeOx(playerItem);
+                    if(!isItem)
+                    {
+                        RechargeOx(playerItem);
+                        StartCoroutine(OXcharge(3f));
+                    }
+                    break;
+                case type.Compass:
+                    if(!isItem) StartCoroutine(OnCompass(maxItemDuration));
                     break;
             }
             Destroy(collision.gameObject);
@@ -315,12 +333,62 @@ public class Player : MonoBehaviour
     }
     IEnumerator OXcharge(float duration)
     {
-        float ct = 0;
-        while(ct < duration)
+        int totalCount = 2;
+        float timePerCount = totalCount / duration;
+        for(int i = 0; i < totalCount; i++)
         {
-            ct += Time.deltaTime;
-            
+            float escape = 0f;
+            float halftime = timePerCount / 2f;
+            while(escape < halftime)
+            {
+                escape += Time.deltaTime;
+                bloom.intensity.value = Mathf.Lerp(1f, 10f, escape / halftime);
+                yield return null;
+            }
+            escape = 0;
+            while(escape < halftime)
+            {
+                escape += Time.deltaTime;
+                bloom.intensity.value = Mathf.Lerp(10f, 1f, escape / halftime);
+                yield return null;
+            }
         }
-        yield return null;
+        bloom.intensity.value = 0f;
+    }
+
+    IEnumerator OnCompass(float duraiton)
+    {
+        Transform targetObj = null;
+        float minDistance = Mathf.Infinity;
+        for(int i = 0; i < ItemSpawner.instance.itemSize; i++) // items가 List라고 가정
+        {
+            Transform currentItem = ItemSpawner.instance.location[i];
+            if(currentItem != null)
+            {
+                float dist = Vector2.Distance(transform.position, currentItem.transform.position);
+                if(dist < minDistance)
+                {
+                    minDistance = dist;
+                    targetObj = currentItem;
+                }
+            }
+        }
+        if(targetObj != null)
+        {
+            arrow.gameObject.SetActive(true);
+            itemGage.enabled = true;
+            float currentTime = 0f;
+            while(currentTime < duraiton)
+            {
+                if(targetObj == null) break;
+                currentTime += Time.deltaTime;
+                Vector2 direction = targetObj.transform.position - transform.position;
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                arrow.rectTransform.localRotation = Quaternion.Euler(0, 0, angle);
+                yield return null;
+            }
+            itemGage.enabled = false;
+            arrow.gameObject.SetActive(false);
+        }
     }
 }
