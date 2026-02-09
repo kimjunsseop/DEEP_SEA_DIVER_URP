@@ -8,6 +8,7 @@ using UnityEditor.Rendering.Universal;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 enum PlayerState
@@ -38,7 +39,8 @@ public class Player : MonoBehaviour
     private BoxCollider2D col;
     public ParticleSystem bubble;
     private PlayerState ps;
-    public PostProcessVolume PV;
+    public Volume volume;
+    private UnityEngine.Rendering.Universal.Bloom bloom;
     
     void Start()
     {
@@ -48,6 +50,7 @@ public class Player : MonoBehaviour
         itemGage.enabled = false;
         currentDuration = maxItemDuration;
         bubble.gameObject.SetActive(false);
+        volume.profile.TryGet(out bloom);
         //UIManager.instance.Initialized();
     }
     void Update()
@@ -226,13 +229,13 @@ public class Player : MonoBehaviour
             switch(playerItem.itemType)
             {
                 case type.Speed:
-                    StartCoroutine(SpeedUp(maxItemDuration));
+                    if(!isItem) StartCoroutine(SpeedUp(maxItemDuration));
                     break;
                 case type.Light:
-                    StartCoroutine(ExpandLight(maxItemDuration));
+                    if(!isItem) StartCoroutine(ExpandLight(maxItemDuration));
                     break;
                 case type.Oxygen:
-                    RechargeOx(playerItem);
+                    if(!isItem) RechargeOx(playerItem);
                     break;
             }
             Destroy(collision.gameObject);
@@ -309,5 +312,15 @@ public class Player : MonoBehaviour
     {
         col.offset = new Vector2(0, 0.05065355f);
         col.size = new Vector2(0.5890918f, 1.430633f);
+    }
+    IEnumerator OXcharge(float duration)
+    {
+        float ct = 0;
+        while(ct < duration)
+        {
+            ct += Time.deltaTime;
+            
+        }
+        yield return null;
     }
 }
