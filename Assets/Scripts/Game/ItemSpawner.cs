@@ -72,7 +72,7 @@ public class ItemSpawner : MonoBehaviour
         }
         for(int i = 0; i < playerItemSize; i++)
         {
-            int plr = UnityEngine.Random.Range(0,3);
+            int plr = UnityEngine.Random.Range(0,4);
             Instantiate(playerItems[plr], playerItemSpawnPoints[prand[i]].position, Quaternion.identity);
         }
     }

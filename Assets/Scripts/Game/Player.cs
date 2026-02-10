@@ -43,7 +43,7 @@ public class Player : MonoBehaviour
     public Volume volume;
     private UnityEngine.Rendering.Universal.Bloom bloom;
     public UnityEngine.UI.Image arrow;
-    
+    private bool playerDeath;
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -54,24 +54,30 @@ public class Player : MonoBehaviour
         bubble.gameObject.SetActive(false);
         volume.profile.TryGet(out bloom);
         arrow.gameObject.SetActive(false);
+        UIManager.instance.StartMessage();
+        playerDeath = false;
+        UIManager.instance.deathText.gameObject.SetActive(false);
         //UIManager.instance.Initialized();
     }
     void Update()
     {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
-        
-        SetAnim(h,v);
-        transform.Translate(new Vector3(h,v,0) * Speed * Time.deltaTime);
-
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(!playerDeath)
         {
-            if(nearBy != null)
+            float h = Input.GetAxis("Horizontal");
+            float v = Input.GetAxis("Vertical");
+            
+            SetAnim(h,v);
+            transform.Translate(new Vector3(h,v,0) * Speed * Time.deltaTime);
+
+            if(Input.GetKeyDown(KeyCode.Space))
             {
-                if(UIManager.instance.itemss.ContainsKey(nearBy.itemType))
+                if(nearBy != null)
                 {
-                    nearBy.Pickuped();
-                    nearBy = null;
+                    if(UIManager.instance.itemss.ContainsKey(nearBy.itemType))
+                    {
+                        nearBy.Pickuped();
+                        nearBy = null;
+                    }
                 }
             }
         }
@@ -104,8 +110,9 @@ public class Player : MonoBehaviour
         }
         if(O2 <= 0)
         {
-            SceneController.instance.EndGame();
-            GameManager.instance.result = false;
+            playerDeath = true;
+            // 모션
+            StartCoroutine(LoseEnding());
         }
     }
     void FixedUpdate()
@@ -220,6 +227,7 @@ public class Player : MonoBehaviour
         {
             // ui 활성화 SetActive(true)
             nearBy = collision.GetComponent<Item>();
+            UIManager.instance.ButtonAnimT();
         }
         if(collision.CompareTag("Monster"))
         {
@@ -230,8 +238,7 @@ public class Player : MonoBehaviour
         {
             if(GameManager.instance.Check())
             {
-                SceneController.instance.EndGame();
-                GameManager.instance.result = true;
+                StartCoroutine(Ending());
             }
         }
         if(collision.CompareTag("PlayerItem"))
@@ -271,6 +278,7 @@ public class Player : MonoBehaviour
         if(collision.CompareTag("Item"))
         {
             nearBy = null;
+            UIManager.instance.ButtonAnimF();
         }
     }
     IEnumerator Shake()
@@ -390,5 +398,24 @@ public class Player : MonoBehaviour
             itemGage.enabled = false;
             arrow.gameObject.SetActive(false);
         }
+    }
+    IEnumerator Ending()
+    {
+        yield return new WaitForSeconds(1.5f);
+        SceneController.instance.EndGame();
+        GameManager.instance.result = true;
+    }
+    IEnumerator LoseEnding()
+    {
+        yield return new WaitForSeconds(1f);
+        while(spotLight.intensity >= 0)
+        {
+            spotLight.intensity -= Time.deltaTime;
+            yield return null;   
+        }
+        UIManager.instance.deathText.gameObject.SetActive(true);
+        SceneController.instance.EndGame();
+        GameManager.instance.result = false;
+        UIManager.instance.deathText.gameObject.SetActive(false);
     }
 }

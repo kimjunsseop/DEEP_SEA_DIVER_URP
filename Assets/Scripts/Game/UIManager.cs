@@ -15,6 +15,11 @@ public class UIManager : MonoBehaviour
     public Dictionary<int, GameObject> itemss = new Dictionary<int, GameObject>();
     public Player player;
     public RectTransform depthImage;
+    public Animator buttonAnim;
+    public TextMeshProUGUI startText;
+    public string startMessage;
+    public float startTextInterval;
+     public TextMeshProUGUI deathText;
 
     void Awake()
     {
@@ -61,5 +66,30 @@ public class UIManager : MonoBehaviour
     {
         Vector2 pos = new Vector2(48f + 1.58f*depth.position.y, 0);
         depthImage.anchoredPosition = pos;
+    }
+    public void ButtonAnimT()
+    {
+        buttonAnim.SetBool("isItem", true);
+    }
+    public void ButtonAnimF()
+    {
+        buttonAnim.SetBool("isItem",false);
+    }
+
+    public void StartMessage()
+    {
+        StartCoroutine(StartText());
+    }
+    IEnumerator StartText()
+    {
+        startText.gameObject.SetActive(true);
+        startText.text = "";
+        foreach(char c in startMessage)
+        {
+            startText.text += c;
+            yield return new WaitForSeconds(startTextInterval);
+        }
+        yield return new WaitForSeconds(1.5f);
+        startText.gameObject.SetActive(false);
     }
 }
