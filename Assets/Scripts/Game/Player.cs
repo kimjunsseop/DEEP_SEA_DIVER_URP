@@ -4,6 +4,7 @@ using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 enum PlayerState
 {
@@ -40,6 +41,25 @@ public class Player : MonoBehaviour
     private DynamicJoystick dj;
     private bool playerDeath;
     public bool isPlaying = false;
+    private string currentAnimState = "";
+    //private PlayerInput inputAction;
+    Vector2 input;
+    void Awake()
+    {
+        //inputAction = new PlayerInput();        
+    }
+    void OnEnable()
+    {
+        // inputAction.Player.Move.performed += OnMove;
+        // inputAction.Player.Move.canceled += OnMove;
+        // inputAction.Enable();
+    }
+    void OnDisable()
+    {
+        // inputAction.Player.Move.performed -= OnMove;
+        // inputAction.Player.Move.canceled -= OnMove;
+        // inputAction.Disable();
+    }
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -63,16 +83,31 @@ public class Player : MonoBehaviour
         {
             if(!playerDeath)
             {
-                float h = 0f;
-                float v = 0f;
-                if (dj.Horizontal != 0 || dj.Vertical != 0)
-                {
-                    h = dj.Horizontal;
-                    v = dj.Vertical;
-                }
+                // 조이스틱
+                // input.x = 0f;
+                // input.y = 0f;
+                // if (dj.Horizontal != 0 || dj.Vertical != 0)
+                // {
+                //     input.x = dj.Horizontal;
+                //     input.y = dj.Vertical;
+                // }
+                input.x = Input.GetAxis("Horizontal");
+                input.y = Input.GetAxis("Vertical");
                 
-                SetAnim(h,v);
-                transform.Translate(new Vector3(h,v,0) * Speed * Time.deltaTime);
+                SetAnim(input.x,input.y);
+                transform.Translate(new Vector3(input.x,input.y,0) * Speed * Time.deltaTime);
+            }
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                if (nearBy != null)
+                {
+                    // 기존 아이템 획득 로직
+                    if (UIManager.instance.itemss.ContainsKey(nearBy.itemType))
+                    {
+                        nearBy.Pickuped();
+                        nearBy = null;
+                    }
+                }
             }
         }
         if(isBreathing)
@@ -117,108 +152,65 @@ public class Player : MonoBehaviour
         Vector3 world = Camera.main.ViewportToWorldPoint(newOffset);
         transform.position = world;
     }
-    public void PickupItem()
-    {
-        if (nearBy != null)
-        {
-            // 기존 아이템 획득 로직
-            if (UIManager.instance.itemss.ContainsKey(nearBy.itemType))
-            {
-                nearBy.Pickuped();
-                nearBy = null;
-            }
-        }
-    }
+    // public void PickupItem()
+    // {
+    //     if (nearBy != null)
+    //     {
+    //         // 기존 아이템 획득 로직
+    //         if (UIManager.instance.itemss.ContainsKey(nearBy.itemType))
+    //         {
+    //             nearBy.Pickuped();
+    //             nearBy = null;
+    //         }
+    //     }
+    // }
     void SetAnim(float h, float v)
     {
-        if(v > 0 && !isBreathing)
+        string nextState = "";
+
+        // 1. 입력값에 따른 목표 상태 결정
+        if (Mathf.Abs(h) < 0.1f && Mathf.Abs(v) < 0.1f)
         {
-            anim.SetBool("Up", true);
-            if(!anim.GetBool("Right") && !anim.GetBool("Left"))
-            {
-                colRig();
-                ps = PlayerState.UP;  
-                if(bubble.gameObject.activeSelf)
-                {
-                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
-                } 
-            }
+            nextState = "Idle";
         }
-        else if(v < 0)
+        else if (Mathf.Abs(v) >= Mathf.Abs(h))
         {
-            anim.SetBool("Down", true);
-            if(!anim.GetBool("Right") && !anim.GetBool("Left"))
-            {
-                colRig();
-                
-                ps = PlayerState.Down; 
-                if(bubble.gameObject.activeSelf)
-                {
-                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
-                }   
-            }
+            nextState = (v > 0) ? "Up" : "Down";
         }
         else
         {
-            anim.SetBool("Up", false);
-            anim.SetBool("Down", false);
-            if(!anim.GetBool("Down") && !anim.GetBool("Up"))
-            {
-                rawRig();
-                ps = PlayerState.UP;
-                if(bubble.gameObject.activeSelf)
-                {
-                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
-                } 
-            }
+            nextState = (h > 0) ? "Right" : "Left";
         }
 
-        if(h > 0 && !isBreathing)
+        // 2. 상태가 변경되었을 때만 파라미터 업데이트
+        // 같은 방향으로 계속 이동 중이라면 아래 로직을 건너뛰므로 애니메이션이 끊기지 않습니다.
+        if (currentAnimState != nextState)
         {
-            anim.SetBool("Right", true);
-            if(!anim.GetBool("Down") && !anim.GetBool("Up"))
-            {
-                rawRig();   
-                ps = PlayerState.Right;
-                if(bubble.gameObject.activeSelf)
-                {
-                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
-                } 
-            }
-        }
-        else if(h < 0 && !isBreathing)
-        {
-            anim.SetBool("Left", true);
-            if(!anim.GetBool("Down") && !anim.GetBool("Up"))
-            {
-                rawRig();   
-                ps = PlayerState.Left;
-                if(bubble.gameObject.activeSelf)
-                {
-                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
-                } 
-            }
-        }
-        else
-        {
-            anim.SetBool("Right", false);
+            // 모든 파라미터 초기화 (상태가 바뀔 때만 한 번 실행)
+            anim.SetBool("Up", false);
+            anim.SetBool("Down", false);
             anim.SetBool("Left", false);
-            if(!anim.GetBool("Right") || !anim.GetBool("Left"))
+            anim.SetBool("Right", false);
+
+            if (nextState != "Idle")
             {
-                colRig();
-                if(v > 0)
-                {
-                    ps = PlayerState.UP;    
-                }
-                else
-                {
-                    ps = PlayerState.Down;
-                }
-                if(bubble.gameObject.activeSelf)
-                {
-                    bubble.transform.rotation = Quaternion.Euler(0,0,(float)ps);
-                } 
+                anim.SetBool(nextState, true);
+                
+                // Enum 및 콜라이더 설정
+                if (nextState == "Up") { ps = PlayerState.UP; colRig(); }
+                else if (nextState == "Down") { ps = PlayerState.Down; colRig(); }
+                else if (nextState == "Right") { ps = PlayerState.Right; rawRig(); }
+                else if (nextState == "Left") { ps = PlayerState.Left; rawRig(); }
+
+                if (bubble.gameObject.activeSelf)
+                    bubble.transform.rotation = Quaternion.Euler(0, 0, (float)ps);
             }
+            else
+            {
+                rawRig(); // Idle 시 기본 콜라이더
+            }
+
+            currentAnimState = nextState; // 현재 상태 업데이트
         }
     }
     void OnTriggerEnter2D(Collider2D collision)
@@ -345,6 +337,10 @@ public class Player : MonoBehaviour
         col.offset = new Vector2(0, 0.05065355f);
         col.size = new Vector2(0.5890918f, 1.430633f);
     }
+    // public void OnMove(InputAction.CallbackContext context)
+    // {
+        
+    // }
     IEnumerator OXcharge(float duration)
     {
         int totalCount = 2;

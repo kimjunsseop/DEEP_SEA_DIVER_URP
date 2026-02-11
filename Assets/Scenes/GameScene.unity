@@ -16711,7 +16711,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.13601112, y: 0.19000113, z: -10}
+  m_LocalPosition: {x: -0.13601112, y: 0.26999712, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -32208,19 +32208,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 836534260}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1051503855}
-        m_TargetAssemblyTypeName: Player, Assembly-CSharp
-        m_MethodName: PickupItem
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &836534260
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32968,6 +32956,7 @@ GameObject:
   - component: {fileID: 1051503856}
   - component: {fileID: 1051503855}
   - component: {fileID: 1051503858}
+  - component: {fileID: 1051503859}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -33061,7 +33050,7 @@ Transform:
   m_GameObject: {fileID: 1051503851}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.31, y: 0.19, z: 0}
+  m_LocalPosition: {x: -2.31, y: 0.27, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -33222,6 +33211,36 @@ MonoBehaviour:
     DissipationDistance: 100
     PropagationSpeed: 343
   DefaultVelocity: {x: 0.07, y: 0.07, z: 0}
+--- !u!114 &1051503859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051503851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: dd79009720cf8d2448c7f99e0859560c, type: 3}
+  m_NotificationBehavior: 3
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: 
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &1064192920
 GameObject:
   m_ObjectHideFlags: 0
@@ -78504,8 +78523,8 @@ Transform:
   m_GameObject: {fileID: 1819757550}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 41.3, y: 1.13, z: 0}
-  m_LocalScale: {x: 106.20849, y: 1, z: 1}
+  m_LocalPosition: {x: 41.3, y: 1.0943, z: 0}
+  m_LocalScale: {x: 106.20849, y: 1.4050989, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -84563,7 +84582,7 @@ Transform:
   m_GameObject: {fileID: 2045776640}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.31, y: 0.19, z: -10}
+  m_LocalPosition: {x: -2.31, y: 0.27, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -84741,8 +84760,8 @@ Transform:
   m_GameObject: {fileID: 2049205476}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 39.1, y: 1.65, z: 0}
-  m_LocalScale: {x: 131.04, y: 1, z: 1}
+  m_LocalPosition: {x: 39.1, y: 1.6104, z: 0}
+  m_LocalScale: {x: 131.04, y: 1.0792, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
