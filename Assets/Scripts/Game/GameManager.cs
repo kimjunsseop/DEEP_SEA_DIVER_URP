@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditorInternal;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -20,7 +18,6 @@ public class GameManager : MonoBehaviour
     
     public List<bool> found = new List<bool>();
     public float endTime;
-    public bool result;
     void Awake()
     {
         if(_instance == null)

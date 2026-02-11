@@ -1,16 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using Microsoft.Unity.VisualStudio.Editor;
-using NUnit.Framework;
-using UnityEditor;
-using UnityEditor.Rendering.Universal;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
-using Unity.VisualScripting;
 
 enum PlayerState
 {
@@ -43,7 +36,10 @@ public class Player : MonoBehaviour
     public Volume volume;
     private UnityEngine.Rendering.Universal.Bloom bloom;
     public UnityEngine.UI.Image arrow;
+    public GameObject joyStick;
+    private DynamicJoystick dj;
     private bool playerDeath;
+    public bool isPlaying = false;
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -57,28 +53,26 @@ public class Player : MonoBehaviour
         UIManager.instance.StartMessage();
         playerDeath = false;
         UIManager.instance.deathText.gameObject.SetActive(false);
+        UIManager.instance.succesText.gameObject.SetActive(false);
+        dj = joyStick.GetComponent<DynamicJoystick>();
         //UIManager.instance.Initialized();
     }
     void Update()
     {
-        if(!playerDeath)
+        if(isPlaying)
         {
-            float h = Input.GetAxis("Horizontal");
-            float v = Input.GetAxis("Vertical");
-            
-            SetAnim(h,v);
-            transform.Translate(new Vector3(h,v,0) * Speed * Time.deltaTime);
-
-            if(Input.GetKeyDown(KeyCode.Space))
+            if(!playerDeath)
             {
-                if(nearBy != null)
+                float h = 0f;
+                float v = 0f;
+                if (dj.Horizontal != 0 || dj.Vertical != 0)
                 {
-                    if(UIManager.instance.itemss.ContainsKey(nearBy.itemType))
-                    {
-                        nearBy.Pickuped();
-                        nearBy = null;
-                    }
+                    h = dj.Horizontal;
+                    v = dj.Vertical;
                 }
+                
+                SetAnim(h,v);
+                transform.Translate(new Vector3(h,v,0) * Speed * Time.deltaTime);
             }
         }
         if(isBreathing)
@@ -122,6 +116,18 @@ public class Player : MonoBehaviour
         newOffset.y = Mathf.Clamp01(newOffset.y);
         Vector3 world = Camera.main.ViewportToWorldPoint(newOffset);
         transform.position = world;
+    }
+    public void PickupItem()
+    {
+        if (nearBy != null)
+        {
+            // 기존 아이템 획득 로직
+            if (UIManager.instance.itemss.ContainsKey(nearBy.itemType))
+            {
+                nearBy.Pickuped();
+                nearBy = null;
+            }
+        }
     }
     void SetAnim(float h, float v)
     {
@@ -373,11 +379,15 @@ public class Player : MonoBehaviour
             Transform currentItem = ItemSpawner.instance.location[i];
             if(currentItem != null)
             {
-                float dist = Vector2.Distance(transform.position, currentItem.transform.position);
-                if(dist < minDistance)
+                Item itemScript = currentItem.GetComponent<Item>();
+                if(itemScript != null && !itemScript.isPickUped)
                 {
-                    minDistance = dist;
-                    targetObj = currentItem;
+                    float dist = Vector2.Distance(transform.position, currentItem.transform.position);
+                    if(dist < minDistance)
+                    {
+                        minDistance = dist;
+                        targetObj = currentItem;
+                    }
                 }
             }
         }
@@ -401,9 +411,11 @@ public class Player : MonoBehaviour
     }
     IEnumerator Ending()
     {
+        yield return new WaitForSeconds(0.2f);
+        UIManager.instance.succesText.gameObject.SetActive(true);
         yield return new WaitForSeconds(1.5f);
+        SceneController.instance.result = true;
         SceneController.instance.EndGame();
-        GameManager.instance.result = true;
     }
     IEnumerator LoseEnding()
     {
@@ -414,8 +426,8 @@ public class Player : MonoBehaviour
             yield return null;   
         }
         UIManager.instance.deathText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        SceneController.instance.result = false;
         SceneController.instance.EndGame();
-        GameManager.instance.result = false;
-        UIManager.instance.deathText.gameObject.SetActive(false);
     }
 }

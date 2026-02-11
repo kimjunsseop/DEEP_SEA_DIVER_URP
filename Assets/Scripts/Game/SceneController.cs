@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneController : MonoBehaviour
 {
+    public bool result;
     private static SceneController _instance;
     public static SceneController instance
     {
@@ -21,6 +22,7 @@ public class SceneController : MonoBehaviour
         if(_instance == null)
         {
             _instance = this;
+            DontDestroyOnLoad(_instance.gameObject);
         }
     }
     

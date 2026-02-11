@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Unity.VisualStudio.Editor;
-using Mono.Cecil.Cil;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ItemSpawner : MonoBehaviour
@@ -64,8 +61,8 @@ public class ItemSpawner : MonoBehaviour
         }
         for(int i = 0; i < itemSize; i++)
         {
-            Instantiate(items[r[i]], spawnPoints[rand[i]].position, Quaternion.identity);
-            location.Add(spawnPoints[rand[i]]);
+            GameObject go = Instantiate(items[r[i]], spawnPoints[rand[i]].position, Quaternion.identity);
+            location.Add(go.transform);
             UIManager.instance.setImage(items[r[i]], i);
             UIManager.instance.itemss.Add(r[i], items[r[i]]);
             GameManager.instance.found.Add(false);

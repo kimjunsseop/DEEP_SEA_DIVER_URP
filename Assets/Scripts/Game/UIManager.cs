@@ -1,9 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Unity.VisualStudio.Editor;
-using NUnit.Framework.Internal;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +16,8 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI startText;
     public string startMessage;
     public float startTextInterval;
-     public TextMeshProUGUI deathText;
+    public TextMeshProUGUI deathText;
+    public TextMeshProUGUI succesText;
 
     void Awake()
     {
@@ -91,5 +89,6 @@ public class UIManager : MonoBehaviour
         }
         yield return new WaitForSeconds(1.5f);
         startText.gameObject.SetActive(false);
+        player.isPlaying = true;
     }
 }

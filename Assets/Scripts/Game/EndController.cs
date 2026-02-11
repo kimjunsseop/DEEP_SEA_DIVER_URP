@@ -9,7 +9,7 @@ public class EndController : MonoBehaviour
     public TextMeshProUGUI die;
     void Start()
     {
-        if(GameManager.instance.result)
+        if(SceneController.instance.result == true)
         {
             pritWin();
         }
