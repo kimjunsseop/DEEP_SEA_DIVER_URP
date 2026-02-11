@@ -94,7 +94,7 @@ public class Player : MonoBehaviour
                 input.x = Input.GetAxis("Horizontal");
                 input.y = Input.GetAxis("Vertical");
                 
-                SetAnim(input.x,input.y);
+                if(!isBreathing) SetAnim(input.x,input.y);
                 transform.Translate(new Vector3(input.x,input.y,0) * Speed * Time.deltaTime);
             }
             if(Input.GetKeyDown(KeyCode.Space))
