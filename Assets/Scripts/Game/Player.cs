@@ -44,6 +44,9 @@ public class Player : MonoBehaviour
     private string currentAnimState = "";
     //private PlayerInput inputAction;
     Vector2 input;
+    public AudioSource source;
+    public AudioClip pickUp;
+    public AudioClip fish;
     void Awake()
     {
         //inputAction = new PlayerInput();        
@@ -75,6 +78,8 @@ public class Player : MonoBehaviour
         UIManager.instance.deathText.gameObject.SetActive(false);
         UIManager.instance.succesText.gameObject.SetActive(false);
         dj = joyStick.GetComponent<DynamicJoystick>();
+        source = GetComponent<AudioSource>();
+        source.playOnAwake = false;
         //UIManager.instance.Initialized();
     }
     void Update()
@@ -104,6 +109,10 @@ public class Player : MonoBehaviour
                     // 기존 아이템 획득 로직
                     if (UIManager.instance.itemss.ContainsKey(nearBy.itemType))
                     {
+                        if(pickUp != null)
+                        {
+                            source.PlayOneShot(pickUp);
+                        }
                         nearBy.Pickuped();
                         nearBy = null;
                     }
@@ -229,6 +238,10 @@ public class Player : MonoBehaviour
         }
         if(collision.CompareTag("Monster"))
         {
+            if(fish != null)
+            {
+                source.PlayOneShot(fish);
+            }
             O2 -= 30f;
             StartCoroutine(Shake());
         }
