@@ -18,13 +18,32 @@ public class EndController : MonoBehaviour
             printDie();
         }
     }
+    public bool reward = false;
     public void Lobby()
     {
-        SceneManager.LoadScene(0);
+        if(AdsManager.Instance.IsRewardEarned == false)
+        {
+            AdsManager.Instance.ShowRewardedAd();
+        }
+        else
+        {
+            // 로비로 가기 전 보상 상태 리셋 (필요시)
+            AdsManager.Instance.IsRewardEarned = false; 
+            SceneManager.LoadScene(0);
+        }
     }
     public void RE()
     {
-        SceneManager.LoadScene(1);
+        if(AdsManager.Instance.IsRewardEarned == false)
+        {
+            AdsManager.Instance.ShowRewardedAd();
+        }
+        else
+        {
+            // 로비로 가기 전 보상 상태 리셋 (필요시)
+            AdsManager.Instance.IsRewardEarned = false; 
+            SceneManager.LoadScene(1);
+        }
     }
     public void pritWin()
     {

@@ -89,35 +89,33 @@ public class Player : MonoBehaviour
             if(!playerDeath)
             {
                 // 조이스틱
-                // input.x = 0f;
-                // input.y = 0f;
-                // if (dj.Horizontal != 0 || dj.Vertical != 0)
-                // {
-                //     input.x = dj.Horizontal;
-                //     input.y = dj.Vertical;
-                // }
-                input.x = Input.GetAxis("Horizontal");
-                input.y = Input.GetAxis("Vertical");
+                input.x = 0f;
+                input.y = 0f;
+                if (dj.Horizontal != 0 || dj.Vertical != 0)
+                {
+                    input.x = dj.Horizontal;
+                    input.y = dj.Vertical;
+                }
                 
                 if(!isBreathing) SetAnim(input.x,input.y);
                 transform.Translate(new Vector3(input.x,input.y,0) * Speed * Time.deltaTime);
             }
-            if(Input.GetKeyDown(KeyCode.Space))
-            {
-                if (nearBy != null)
-                {
-                    // 기존 아이템 획득 로직
-                    if (UIManager.instance.itemss.ContainsKey(nearBy.itemType))
-                    {
-                        if(pickUp != null)
-                        {
-                            source.PlayOneShot(pickUp);
-                        }
-                        nearBy.Pickuped();
-                        nearBy = null;
-                    }
-                }
-            }
+            // if(Input.GetKeyDown(KeyCode.Space))
+            // {
+            //     if (nearBy != null)
+            //     {
+            //         // 기존 아이템 획득 로직
+            //         if (UIManager.instance.itemss.ContainsKey(nearBy.itemType))
+            //         {
+            //             if(pickUp != null)
+            //             {
+            //                 source.PlayOneShot(pickUp);
+            //             }
+            //             nearBy.Pickuped();
+            //             nearBy = null;
+            //         }
+            //     }
+            // }
         }
         if(isBreathing)
         {
@@ -161,18 +159,22 @@ public class Player : MonoBehaviour
         Vector3 world = Camera.main.ViewportToWorldPoint(newOffset);
         transform.position = world;
     }
-    // public void PickupItem()
-    // {
-    //     if (nearBy != null)
-    //     {
-    //         // 기존 아이템 획득 로직
-    //         if (UIManager.instance.itemss.ContainsKey(nearBy.itemType))
-    //         {
-    //             nearBy.Pickuped();
-    //             nearBy = null;
-    //         }
-    //     }
-    // }
+    public void PickupItem()
+    {
+        if (nearBy != null)
+        {
+            // 기존 아이템 획득 로직
+            if (UIManager.instance.itemss.ContainsKey(nearBy.itemType))
+            {
+                if(pickUp != null)
+                {
+                source.PlayOneShot(pickUp);
+                }
+                nearBy.Pickuped();
+                nearBy = null;
+            }
+        }
+    }
     void SetAnim(float h, float v)
     {
         string nextState = "";
