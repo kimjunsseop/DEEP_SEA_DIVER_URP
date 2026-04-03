@@ -25,10 +25,6 @@ public class GameManager : MonoBehaviour
             _instance = this;
         }
     }
-    void Update()
-    {
-        
-    }
     public void Change(int index)
     {
         found[index] = true;
